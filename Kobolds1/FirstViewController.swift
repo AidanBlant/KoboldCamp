@@ -8,13 +8,25 @@
 
 import UIKit
 
-class FirstViewController: UIViewController {
+class CampViewController: UIViewController {
 
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTap(_:)))
+        self.addGestureRecognizer(tap)
     }
 
-
+    @objc func handeTap(_ sender: UITapGestureRecognizer? = nil)
+    {
+        
+        print("screen tapped")
+        
+    }
+    
+    
 }
 
