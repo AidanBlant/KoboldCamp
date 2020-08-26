@@ -21,12 +21,9 @@ class CampViewController: UIViewController {
     // MARK: - MAP PROPERTIES
     
     @IBOutlet weak var campView: UITextView!
-//    let blockChar : Character = "█"
-
-    // This block will all be part of the "Map" Object that tilesONScreen will call to to get current displayed map
-//    var aString : String = ""
-    var totalMapWidth : Int = 100
-    var totalMapHeight : Int = 100
+    
+//    var totalMapWidth : Int = 100
+//    var totalMapHeight : Int = 100
     
     var campMap : Map = Map()
     
@@ -36,45 +33,21 @@ class CampViewController: UIViewController {
             updateMapOnScreen()
         }
         get {
-            // This should return aString (theFullMap)
-            // but adjusted for the subbox that it is
-            // so offset by X/Y tile that is at topLeft
-            // Check that map is valid, otherwise print string: "Map Not Loaded Properly"
-            if( campMap.mapTiles.count <= 0 )
-            {
+            if( campMap.mapTiles.count <= 0 ){
                 return NSMutableAttributedString(string: "Map Not Loaded Properly campMap.mapTiles.count == \(campMap.mapTiles.count)")
             }
-            
+        
             var mapOnScreen = NSMutableAttributedString.init(string: "")
-            
             for y in 0..<mapTileHeight
             {
                 for x in 0..<mapTileWidth
                 {
                     let theTile = campMap.mapTiles[x+currentMapXOffset][y+currentMapYOffset]
-                    
                     mapOnScreen = mapOnScreen + theTile.getTile()
-                    
-/*                    if( theTile.hasWall ){
-                        // Set Color depending on type of object
-//                        let greenColor = UIColor(red: 10/255, green: 190/255, blue: 50/255, alpha: 1)
-                        let attributedStringColor = [NSAttributedString.Key.foregroundColor : UIColor.gray];
-                        let attributedString = NSMutableAttributedString(string: "\(blockChar)", attributes: attributedStringColor)
-                        mapOnScreen = mapOnScreen + attributedString
-//                            attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.green, range: range)
-                    }else if( theTile.hasFloor ){
-                        let grassTile = NSMutableAttributedString(string: ",", attributes: [NSAttributedString.Key.foregroundColor : UIColor.green] )
-                        mapOnScreen = mapOnScreen + grassTile// NSMutableAttributedString(string: ",")
-                    }else{
-//                        mapOnScreen += "\(blockChar)"
-                        mapOnScreen = mapOnScreen + NSMutableAttributedString(string: "\(blockChar)")
-                    }*/
-                    
-//mapOnScreen += aString[ (((y+currentMapYOffset)*totalMapWidth)+(x+currentMapXOffset)) ]
                 }
             }
-            let dontRange = (mapOnScreen.string as NSString).range(of: mapOnScreen.string)
-            mapOnScreen.addAttribute(NSAttributedString.Key.font, value: UIFont(name: "Courier", size: 21.0)!, range: dontRange)
+            let range = (mapOnScreen.string as NSString).range(of: mapOnScreen.string)
+            mapOnScreen.addAttribute(NSAttributedString.Key.font, value: UIFont(name: "Courier", size: fontSize)!, range: range)
             return mapOnScreen
         }
         
@@ -84,17 +57,16 @@ class CampViewController: UIViewController {
     
     
     // MARK: -  Important Mapping Stuff
-    var fontSize : Int = 21
+    var fontSize : CGFloat = 21.0
+    
+    // TODO: Genereate these based on ScreenSize and Font-Size
     var mapTileWidth : Int = 32
     var mapTileHeight : Int = 35
     
-    //start with 0,0 offset
-//    var currentMapOffset : CGPoint = CGPoint(x: 0, y: 0) // Again
     var currentMapXOffset : Int = 0
-    var currentMapYOffset : Int = 5
+    var currentMapYOffset : Int = 0
     var globalPoint : CGPoint {
         get {
-//            campView.superView!.convert(campView.frame.origin, to: nil)
             self.view.convert(campView.frame.origin, to: nil)
         }
     }
@@ -142,13 +114,13 @@ class CampViewController: UIViewController {
         if( newY < 0 ){
             newY = 0
         }
-        if( newX > 68)
+        if( newX > campMap.width - mapTileWidth)
         {
-            newX = 68
+            newX = campMap.width - mapTileWidth
         }
-        if( newY > 65)
+        if( newY > campMap.height - mapTileHeight)
         {
-            newY = 65
+            newY = campMap.height - mapTileHeight
         }
         print("Newoffset is: (\(newX),\(newY))")
         currentMapXOffset = newX
@@ -161,9 +133,8 @@ class CampViewController: UIViewController {
 
     //
     func generateMap(){
-        if( campMap.mapTiles.count <= 100 ){
-            campMap = MapGenerator.generateMap()
-        }
+        // If campMap doesn't exist ==>
+        campMap = MapGenerator.generateMap(height: 100, width: 100)
         updateMapOnScreen()
         
     }

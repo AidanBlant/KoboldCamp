@@ -44,15 +44,26 @@ struct Tile {
 
 
 class Map {
+    public let height : Int
+    public let width : Int
     
     public var mapTiles : [[Tile]]
     
     init(){
         mapTiles = [[Tile]]()
+        self.height = 100
+        self.width = 100
     }
     init(mapTiles : [[Tile]])
     {
         self.mapTiles = mapTiles
+        self.height = 100
+        self.width = 100
+    }
+    init(width: Int, height: Int){
+        self.width = width
+        self.height = height
+        self.mapTiles = [[Tile]]()
     }
 }
 
@@ -60,24 +71,27 @@ class Map {
 
  class MapGenerator{
     
-    static func generateMap()->Map{
+    
+    static func generateMap(height : Int, width : Int)->Map{
         let newMap = Map()
-        newMap.mapTiles = Array(repeating: Array(repeating: Tile(hasWall: false, hasFloor: true)/*, version: Int.random(in: 0..<4))*/, count: 100), count: 100)
-        for i in 0..<100{
-            for j in 0..<100{
+        newMap.mapTiles = Array(repeating: Array(repeating: Tile(hasWall: false, hasFloor: true)/*, version: Int.random(in: 0..<4))*/, count: height), count: width)
+        for i in 0..<height{
+            for j in 0..<width{
                 newMap.mapTiles[i][j].version = Int.random(in: 0..<4)
             }
         }
         
-        for i in 0..<100{
+        for i in 0..<width{ // TODO: Only works if width and height the same
             newMap.mapTiles[i][0].hasWall = true
-            newMap.mapTiles[0][i].hasWall = true
-            newMap.mapTiles[i][99].hasWall = true
-            newMap.mapTiles[99][i].hasWall = true
+            newMap.mapTiles[i][height-1].hasWall = true
+        }
+        for j in 0..<height{
+            newMap.mapTiles[width-1][j].hasWall = true
+            newMap.mapTiles[0][j].hasWall = true
         }
         
-        for i in 0..<100{
-            newMap.mapTiles[Int.random(in: 0..<100)][Int.random(in: 0..<100)].hasWall = true
+        for i in 0..<height{ // TODO: Fix this
+            newMap.mapTiles[Int.random(in: 0..<height)][Int.random(in: 0..<width)].hasWall = true
         }
         
         return newMap
